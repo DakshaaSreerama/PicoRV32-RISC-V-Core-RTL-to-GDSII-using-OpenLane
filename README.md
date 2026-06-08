@@ -300,18 +300,13 @@ projects due to its clean, well-documented RTL structure and compact size.
 
 ## Author
 
-**Dakshaa S**
-B.E. Electronics — VLSI Design and Technology (3rd Year)
-Nitte Meenakshi Institute of Technology (NMIT), Bengaluru
+**Dakshaa Sreerama**
+B.E. Electronics Engineering (VLSI Design and Technology)
+Nitte Meenakshi Institute of Technology, Bengaluru
 CGPA: 9.5 | Graduating 2027
 
-Target Role: ASIC Physical Design Engineer
-
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?logo=linkedin)](https://linkedin.com/in/YOUR_LINKEDIN_URL)
-[![GitHub](https://img.shields.io/badge/GitHub-Follow-black?logo=github)](https://github.com/YOUR_GITHUB_USERNAME)
-
----
-
+LinkedIn: 
+GitHub:
 ## References
 
 - [OpenLane Documentation](https://openlane.readthedocs.io)
