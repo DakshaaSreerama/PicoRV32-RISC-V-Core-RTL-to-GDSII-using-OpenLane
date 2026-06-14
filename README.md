@@ -199,7 +199,7 @@ Antenna Summary:
 ### Full Chip GDSII View
 *Complete die layout showing all metal layers, standard cell placement, and IO pins — viewed in KLayout 0.30.9*
 
-![Full Chip Layout](images/full_chip_gds.png)
+![Full Chip Layout](screenshots/final_gdsii.png)
 
 The scale bar (bottom left) confirms the ~324µm × 324µm die size. The dense green area is the standard cell placement region. Horizontal copper/orange stripes are the met4/met5 power distribution network.
 
@@ -208,7 +208,7 @@ The scale bar (bottom left) confirms the ~324µm × 324µm die size. The dense g
 ### Power Distribution Network (PDN)
 *Isolated view showing met4 vertical stripes (gold) and met5 horizontal stripes (pink) forming the VDD/VSS power mesh*
 
-![Power Grid](images/power_grid.png)
+![Power Grid](screenshots/power_grid.png)
 
 The uniform pitch of the power stripes ensures low IR drop across the entire core. The intersections of vertical and horizontal stripes form via-connected power nodes that supply every standard cell through met1 rails.
 
@@ -217,7 +217,7 @@ The uniform pitch of the power stripes ensures low IR drop across the entire cor
 ### Standard Cell Placement
 *nwell layer (65/20) view showing the standard cell placement density across the core area*
 
-![Placement View](images/placement.png)
+![Placement View](screenshots/placement.png)
 
 The solid orange fill represents the nwell regions of the standard cells. Uniform density across the die confirms clean global placement with no congestion hotspots. The horizontal power stripe regions are visible as gaps.
 
@@ -226,7 +226,7 @@ The solid orange fill represents the nwell regions of the standard cells. Unifor
 ### Signal Routing (met2 + met3)
 *Routing layers view — met3 horizontal (green) and met2 vertical (red/orange) signal wires*
 
-![Routing View](images/routing_done.png)
+![Routing View](screenshots/routing_done.png)
 
 The alternating horizontal/vertical routing directions of met2 and met3 are clearly visible — this is the standard preferred routing direction strategy used by TritonRoute. The regular pattern indicates low congestion and efficient router utilisation.
 
@@ -235,7 +235,7 @@ The alternating horizontal/vertical routing directions of met2 and met3 are clea
 ### Zoomed Cell-Level View
 *Close-up view showing individual standard cells and routing detail*
 
-![Zoomed View](images/zoomed_view.png)
+![Zoomed View](screenshots/gdsii_zoomed_full.png)
 
 At this zoom level, individual standard cell boundaries are visible. The status bar confirms cell identification — `sky130_ef_sc_hd__decap_12` (decoupling capacitor cell from the Sky130 library) is visible, showing the mix of logic cells and filler/decap cells in the final layout.
 
@@ -244,6 +244,9 @@ At this zoom level, individual standard cell boundaries are visible. The status 
 ## Timing Analysis
 
 ### Multi-Corner STA Report (OpenSTA + OpenRCX SPEF)
+
+![STA Report](reports/report2.png)
+![STA Report](reports/report2_continued.png)
 
 ```
 report_checks --slack_max -0.01
@@ -286,6 +289,8 @@ Fanout  Cap    Slew   Delay  Time   Description
 ---
 
 ## Physical Verification
+
+![STA Report](reports/report1.png)
 
 ### DRC (Design Rule Check) — Magic
 
