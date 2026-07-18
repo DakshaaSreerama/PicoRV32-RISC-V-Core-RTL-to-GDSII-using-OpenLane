@@ -468,6 +468,49 @@ cp designs/picorv32/runs/RUN_*/results/final/gds/picorv32.gds designs/picorv32/
 - [KLayout GDSII Viewer](https://www.klayout.de)
 
 ---
+## Power Integrity: IR Drop Analysis
+
+Closing a chip physically (zero DRC, clean timing) doesn't guarantee the power delivery network can actually sustain the design under load. As a follow-up to the RTL-to-GDSII flow above, I used **OpenROAD's PSM (Power/Static IR-drop analysis) tool** to check the health of PicoRV32's power distribution network (PDN) — and then deliberately weakened the PDN to quantify how much margin the original design actually has.
+
+### Methodology
+
+- Extracted the existing PDN, placement, and routing data from the signed-off OpenLane run (no re-run of synthesis/placement/CTS/routing)
+- Ran `analyze_power_grid` on the `VPWR`/`VGND` nets using the final DEF, merged LEF, `sky130_fd_sc_hd` liberty file, extracted SPEF (parasitic-aware, not vectorless), and the design's SDC (clock constraints, needed for realistic switching-current estimates)
+- Built a second variant with a deliberately sparser, thinner PDN (`FP_PDN_VPITCH`/`HPITCH`: 400µm, `FP_PDN_VWIDTH`/`HWIDTH`: 1.6µm vs. Sky130 defaults) and ran it through the full OpenLane flow to get a comparable signed-off DEF/SPEF
+- Re-ran PSM on the weakened variant and compared results directly
+
+### Results
+
+| Metric | Original PDN | Weakened PDN | Change |
+|---|---|---|---|
+| Strap pitch (V/H) | Sky130 default (~150µm) | 400 µm | ~2.7× sparser |
+| Strap width (V/H) | Sky130 default (~3–4µm) | 1.6 µm | ~2× thinner |
+| **Worst-case IR drop (VPWR)** | **9.01 mV** | **20.6 mV** | +129% |
+| Average IR drop (VPWR) | 6.64 mV | 12.5 mV | +88% |
+| Worst-case IR drop (VGND) | 9.00 mV | 20.1 mV | +123% |
+| % of 1.8V supply | ~0.50% | ~1.14% | 2.3× worse |
+| PDN nodes on VPWR | 7,104 | 5,504 | 22% fewer |
+| DRC / LVS | Clean | Clean | — |
+| Timing | Clean | Max fanout violations appeared | New issue |
+
+![IR Drop Comparison](irdrop_analysis/picorv32_irdrop_comparison.png)
+
+### Key findings
+
+- The original PDN is **well-margined** — a 0.5% worst-case drop sits comfortably within the typical 5–10% industry guideline for IR drop as a fraction of supply voltage.
+- The worst-case node in the original design sits near a clock buffer instance, consistent with clock buffers drawing more dynamic current per cycle than average combinational logic.
+- Deliberately sparsifying and thinning the power straps **roughly doubled the IR drop** (both in absolute mV and as a % of supply), confirming a direct, predictable relationship between PDN strap density and power delivery quality.
+- Even at 2× worse, the weakened PDN (1.14%) technically remains within typical margins — reflecting PicoRV32's relatively low switching activity/power density rather than suggesting IR drop is unimportant at scale.
+- The weaker PDN also introduced new max-fanout timing violations, showing that PDN density choices have knock-on effects beyond power integrity alone.
+
+### Files
+
+- [`irdrop_analysis/baseline_irdrop.tcl`](irdrop_analysis/baseline_irdrop.tcl) — PSM analysis script for the original PDN
+- [`irdrop_analysis/weak_irdrop.tcl`](irdrop_analysis/weak_irdrop.tcl) — PSM analysis script for the weakened PDN variant
+- [`irdrop_analysis/reports/`](irdrop_analysis/reports/) — raw PSM output reports (per-instance voltage tables)
+- [`irdrop_analysis/IRDROP_REPORT.md`](irdrop_analysis/IRDROP_REPORT.md) — full writeup with detailed methodology and analysis
+
+**Tools used:** OpenROAD (`psm`), OpenLane, Sky130 PDK
 
 ## Author
 
